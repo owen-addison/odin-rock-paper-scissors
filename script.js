@@ -1,16 +1,45 @@
+let pScore = 0, cScore = 0;
+let i = 0;
+
+const body = document.querySelector('body');
+
+const score = document.createElement('div');
+
+score.classList.add('scores');
+
+
+score.textContent = "Player: " + pScore + ", Computer: " + cScore;
+
+body.appendChild(score);
+
+
 function getComputerChoice() {
     const choices = ["rock", "paper", "scissors"];
 
     return choices[Math.floor(Math.random() * choices.length)];
 };
 
-function playRound(playerSelection, computerSelection, i, round) {
-    let ps = playerSelection.toLowerCase();
-    let cs = computerSelection;
-    // round = [];
+function playRound(playerSelection, i) {
+    const ps = playerSelection.toLowerCase();
+    const cs = getComputerChoice();
 
-    console.log("Round " + (i + 1) + ". Player chooses " + ps + ", computer chooses " + cs + ".");
+    const round = [];
+    
+    // const resultDiv = document.querySelector('.results');
+    const welcome = document.querySelector('#welcome');
 
+    if (i === 0) {
+        i++;
+
+        welcome.innerText = "Round " + i + ". Player chooses " + ps + ", computer chooses " + cs + ".";
+    } else if (i > 0) {
+        i++;
+
+        welcome.innerText = "Round " + i + ". Player chooses " + ps + ", computer chooses " + cs + ".";
+    }
+
+    round.push(i);
+    
     if (ps == "rock" && cs == "rock") {
         round.push("Draw! Choose again.");
         round.push("draw");
@@ -47,77 +76,53 @@ function playRound(playerSelection, computerSelection, i, round) {
         round.push("Draw! Choose again!");
         round.push("draw");
         return round;
-    } else if (ps != "rock" && ps != "papers" && ps != "scissors") {
-        round.push("Error! Invalid selection, choose again.");
-        round.push("error");
-        return round;
     }
 };
 
-function game() {
-    let pScore = 0, cScore = 0;
-
-    for (let i = 0; i < 5; i++) { 
-        playerSelection = prompt("What's your choice?");
-        computerSelection = getComputerChoice();
-        let round = [];
-
-        playRound(playerSelection, computerSelection, i, round);
-
-        console.log(round[0]);
-
-        if (round[1] == "player") {
-            pScore++;
-        } else if (round[1] == "computer") {
-            cScore++;
-        } else if (round[1] == "error") {
-            i--;
-        } else if (round[1] == "draw") {
-            i--;
-        }
-
-        if (pScore >= 3) {
-            break;
-        } else if (cScore >= 3) {
-            break;
-        }
+function updateScore(roundWinner) {
+    if (roundWinner == "player") {
+        pScore++;
+        score.textContent = "You win! Player: " + pScore + ", Computer: " + cScore;
+    } else if (roundWinner == "computer") {
+        cScore++;
+        score.textContent = "Computer wins! Player: " + pScore + ", Computer: " + cScore;
+    } else {
+        score.textContent = "Draw! Player: " + pScore + ", Computer: " + cScore;
     }
+};
 
-    console.log("You scored " + pScore + ". The computer scored " + cScore + ".");
 
-    if (pScore < cScore) {
-        result = "You lose!";
-    } else if (pScore > cScore) {
-        result = "You win!";
-    }
 
-    return result;
+function endGame(result) {
+    // Announce result
+    alert(result);
+
+    // Reset game
+    pScore = 0, cScore = 0, i = 0;
+    welcome.innerText = "Go again! First to 5 wins!";
+    score.textContent = "Player: " + pScore + ", Computer: " + cScore;
 };
 
 let playerSelection, computerSelection, result;
-// let round = [];
-
-console.log(game());
-
-// const playerSelection = "rock";
-// const computerSelection = getComputerChoice();
-
-// console.log(playRound(playerSelection, computerSelection));
 
 
-/* PSEUDOCODE
+const buttons = document.querySelectorAll('.button');
 
-- Convert playerSelection (PS) string to lower case
-- If PS is "rock" and computerSelection (CS) is "rock" return "Draw! Choose again!"
-- If PS is "rock" and CS is "paper" return "You lose! Paper beats rock!"
-- If PS is "rock" and CS is "scissors" return "You win! Rock beats scissors!"
-- If PS is "paper" and CS is "rock" return "You win! Paper beats rock!"
-- If PS is "paper" and CS is "paper" return "Draw! Choose again!"
-- If PS is "paper" and CS is "scissors" return "You lose! Scissors beat paper!"
-- If PS is "scissors" and CS is "rock" return "You lose! Rock beats scissors!"
-- If PS is "scissors" and CS is "paper" return "You win! Scissors beat paper!"
-- If PS is "scissors" and CS is "scissors" return "Draw! Choose again!"
-- Else if PS isn't "rock", "paper" or "scissors" return "Error! Invalid selection!"
+buttons.forEach((button) => {
 
-*/
+    button.addEventListener('click', () => {
+        let round = playRound(button.textContent, i);
 
+        i = round[0];
+
+        updateScore(round[2]);
+
+        console.log(i);
+
+        if (pScore == 5) {
+            endGame("YOU WIN!");
+        } else if (cScore == 5) {
+            endGame("YOU LOSE!");
+        }
+    });
+});
